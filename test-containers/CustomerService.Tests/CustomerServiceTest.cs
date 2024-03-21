@@ -1,3 +1,5 @@
+using System.Data.Common;
+using Npgsql;
 using Testcontainers.PostgreSql;
 
 namespace Customers.Tests;
@@ -5,7 +7,7 @@ namespace Customers.Tests;
 public sealed class CustomerServiceTest : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:15-alpine")
+        .WithImage("postgres:16.2-alpine")
         .Build();
 
     public Task InitializeAsync()
@@ -31,5 +33,19 @@ public sealed class CustomerServiceTest : IAsyncLifetime
 
         // Then
         Assert.Equal(2, customers.Count());
+    }
+    
+    [Fact]
+    public void ExecuteCommand()
+    {
+        using (DbConnection connection = new NpgsqlConnection(_postgres.GetConnectionString()))
+        {
+            using (DbCommand command = new NpgsqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "SELECT 1";
+            }
+        }
     }
 }
