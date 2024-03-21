@@ -1,1 +1,1 @@
-## unit tests $ integration tests
+## unit tests & integration tests
